@@ -1,12 +1,40 @@
 basePath: /
 definitions:
+  models.Tiger:
+    properties:
+      date_of_birth:
+        type: string
+      last_seen_coordinates_lat:
+        type: number
+      last_seen_coordinates_lon:
+        type: number
+      last_seen_timestamp:
+        type: string
+      name:
+        type: string
+      tiger_id:
+        type: string
+    type: object
+  models.TigerSightingData:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      sighting_id:
+        type: string
+      sighting_image:
+        type: string
+      tiger_id:
+        type: string
+      timestamp:
+        type: string
+    type: object
   models.User:
     properties:
-      email_id:
+      email:
         type: string
-      profile_pic:
-        type: string
-      role:
+      password:
         type: string
       user_id:
         type: string
@@ -33,6 +61,240 @@ paths:
       summary: Show the status of server.
       tags:
       - Health-Controller
+  /tiger/v1/checkIfTigerExists/{tigerId}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: tigerId
+        in: path
+        name: tigerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Check if a tiger exists by tigerId
+      tags:
+      - Tiger-Controller
+  /tiger/v1/create_new:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Tiger body with timestamp format yyyy-mm-dd HH:ii:ss
+        in: body
+        name: tiger
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tiger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create a new tiger
+      tags:
+      - Tiger-Controller
+  /tiger/v1/deletebyTigerId/{tigerId}:
+    delete:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: tigerId
+        in: path
+        name: tigerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete a tiger by tigerId
+      tags:
+      - Tiger-Controller
+  /tiger/v1/fetch_all:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all tigers
+      tags:
+      - Tiger-Controller
+  /tiger/v1/tiger_id/{tigerId}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: tigerId
+        in: path
+        name: tigerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get a tiger by tigerId
+      tags:
+      - Tiger-Controller
+  /tiger/v1/update:
+    put:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Tiger
+        in: body
+        name: tiger
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tiger'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update a tiger
+      tags:
+      - Tiger-Controller
+  /tigerSighting/v1/create_new:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: TigerSightingData
+        in: body
+        name: sightingData
+        required: true
+        schema:
+          $ref: '#/definitions/models.TigerSightingData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create a new tiger sighting
+      tags:
+      - TigerSighting-Controller
+  /tigerSighting/v1/deletebySightingId/{sightingId}:
+    delete:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: sightingId
+        in: path
+        name: sightingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete a tiger sighting by sightingId
+      tags:
+      - TigerSighting-Controller
+  /tigerSighting/v1/fetch_all:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all tiger sightings
+      tags:
+      - TigerSighting-Controller
+  /tigerSighting/v1/sighting_id/{sightingId}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: sightingId
+        in: path
+        name: sightingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get a tiger sighting by sightingId
+      tags:
+      - TigerSighting-Controller
+  /tigerSighting/v1/tiger_id/{tigerId}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: tigerId
+        in: path
+        name: tigerId
+        required: true
+        type: string
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all tiger sightings for a tiger
+      tags:
+      - TigerSighting-Controller
+  /tigerSighting/v1/update:
+    put:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: TigerSightingData
+        in: body
+        name: sightingData
+        required: true
+        schema:
+          $ref: '#/definitions/models.TigerSightingData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update a tiger sighting
+      tags:
+      - TigerSighting-Controller
   /user/v1/create_new:
     post:
       consumes:
@@ -65,12 +327,6 @@ paths:
     delete:
       consumes:
       - '*/*'
-      parameters:
-      - description: userId
-        in: path
-        name: userId
-        required: true
-        type: string
       produces:
       - application/json
       responses:

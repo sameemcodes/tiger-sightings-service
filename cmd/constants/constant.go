@@ -31,6 +31,8 @@ var (
 
 // mysql_db constants
 const WhereUserId string = "user_id = ?"
+const WhereTigerId string = "tiger_id = ?"
+const WhereSightingId string = "sighting_id = ?"
 
 // context key MYSQLDB
 

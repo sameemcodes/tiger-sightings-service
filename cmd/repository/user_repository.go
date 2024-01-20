@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"tigerhall-kittens/cmd/models"
 
 	"tigerhall-kittens/cmd/constants"
@@ -37,8 +36,6 @@ func (uRepo *userRepository) GetUserByUserId(ctx context.Context, UserId string)
 }
 
 func (uRepo *userRepository) CreateNewUser(ctx context.Context, user models.User) (_ models.User, err error) {
-	fmt.Println("user removable", user)
-
 	var dbWithCtx = uRepo.db.WithContext(ctx)
 	getUser := dbWithCtx.Create(&user)
 	return user, getUser.Error
