@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"bufio"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"tigerhall-kittens/cmd/models"
 	"tigerhall-kittens/cmd/service"
+	"tigerhall-kittens/cmd/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -69,25 +73,78 @@ func (c *tigerSightingController) GetAllTigerSightings(ctx *gin.Context) {
 // CreateNewTigerSighting godoc
 // @Summary Create a new tiger sighting
 // @Tags TigerSighting-Controller
-// @Accept */*
-// @Param sightingData body models.TigerSightingData true "TigerSightingData"
+// @Accept application/json,multipart/form-data
+// @Param photo formData file true "Tiger Photo"
+// @Param latitude formData float64 true "Latitude"
+// @Param longitude formData float64 true "Longitude"
+// @Param sighting_id formData string true "Sighting ID"
+// @Param tiger_id formData string true "Tiger ID"
+// @Param timestamp formData string true "Timestamp Format yyyy-mm-dd hh:mm:ss"
 // @Success 200
+// @Failure 400
 // @Failure 404
 // @Failure 500
 // @Produce json
 // @Router /tigerSighting/v1/create_new [post]
 func (c *tigerSightingController) CreateNewTigerSighting(ctx *gin.Context) {
+
 	var sightingData models.TigerSightingData
-	if err := ctx.BindJSON(&sightingData); err != nil {
+
+	// Extract individual parameters
+	latitude, _ := strconv.ParseFloat(ctx.PostForm("latitude"), 64)
+	longitude, _ := strconv.ParseFloat(ctx.PostForm("longitude"), 64)
+	sightingData.Latitude = latitude
+	sightingData.Longitude = longitude
+	sightingData.SightingID = ctx.PostForm("sighting_id")
+	sightingData.TigerID = ctx.PostForm("tiger_id")
+	sightingData.Timestamp = ctx.PostForm("timestamp")
+
+	// Handle photo upload and resizing
+	if err := TigerSightingImageUpload(ctx, &sightingData); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	sightingData, err := c.tigerSightingService.CreateNewTigerSighting(ctx, sightingData)
+	fmt.Println("sightingData2", sightingData)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during CreateNewTigerSighting ": err.Error()})
 	} else {
 		ctx.JSON(http.StatusOK, sightingData)
 	}
+}
+
+// TigerImageUpload implements TigerSightingService.
+func TigerSightingImageUpload(ctx *gin.Context, sightingData *models.TigerSightingData) error {
+	// Check if a file is included in the request
+	file, err := ctx.FormFile("photo")
+	if err != nil {
+		return nil
+	}
+	// Open the uploaded file
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Create a bufio.Reader for reading the file content
+	reader := bufio.NewReader(src)
+
+	// Read the file content directly into a byte slice
+	fileData, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+
+	base64Image, err := utils.ResizeImage(fileData, 250, 250)
+	if err != nil {
+		return err
+	}
+	// Update the sightingData with the resized image path
+	sightingData.SightingImage = base64Image
+	print("base64Image resu", base64Image)
+	return nil
 }
 
 // UpdateTigerSighting godoc

@@ -177,19 +177,46 @@ paths:
   /tigerSighting/v1/create_new:
     post:
       consumes:
-      - '*/*'
+      - application/json
+      - multipart/form-data
       parameters:
-      - description: TigerSightingData
-        in: body
-        name: sightingData
+      - description: Tiger Photo
+        in: formData
+        name: photo
         required: true
-        schema:
-          $ref: '#/definitions/models.TigerSightingData'
+        type: file
+      - description: Latitude
+        in: formData
+        name: latitude
+        required: true
+        type: number
+      - description: Longitude
+        in: formData
+        name: longitude
+        required: true
+        type: number
+      - description: Sighting ID
+        in: formData
+        name: sighting_id
+        required: true
+        type: string
+      - description: Tiger ID
+        in: formData
+        name: tiger_id
+        required: true
+        type: string
+      - description: Timestamp Format yyyy-mm-dd hh:mm:ss
+        in: formData
+        name: timestamp
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
         "500":
