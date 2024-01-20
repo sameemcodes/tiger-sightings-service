@@ -1,0 +1,124 @@
+basePath: /
+definitions:
+  models.User:
+    properties:
+      email_id:
+        type: string
+      profile_pic:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+      user_name:
+        type: string
+    type: object
+info:
+  contact:
+    email: mmmohamedsameem@gmail.com
+    name: Mohamed Sameem
+  description: Tiggerhall-Kittens
+  title: tiggerhall-kittens
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Show the status of server.
+      tags:
+      - Health-Controller
+  /user/v1/create_new:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create a new user
+      tags:
+      - User-Controller
+  /user/v1/deletebyUserId/{userId}:
+    delete:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete a user by userId
+      tags:
+      - User-Controller
+  /user/v1/fetch_all:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all users
+      tags:
+      - User-Controller
+  /user/v1/update:
+    put:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update a user
+      tags:
+      - User-Controller
+  /user/v1/user_id/{userId}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get a user by userId
+      tags:
+      - User-Controller
+swagger: "2.0"
