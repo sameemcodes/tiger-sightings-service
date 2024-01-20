@@ -213,7 +213,8 @@ const docTemplate = `{
         "/tigerSighting/v1/create_new": {
             "post": {
                 "consumes": [
-                    "*/*"
+                    "application/json",
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -224,18 +225,54 @@ const docTemplate = `{
                 "summary": "Create a new tiger sighting",
                 "parameters": [
                     {
-                        "description": "TigerSightingData",
-                        "name": "sightingData",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.TigerSightingData"
-                        }
+                        "type": "file",
+                        "description": "Tiger Photo",
+                        "name": "photo",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Latitude",
+                        "name": "latitude",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Longitude",
+                        "name": "longitude",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sighting ID",
+                        "name": "sighting_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tiger ID",
+                        "name": "tiger_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Timestamp Format yyyy-mm-dd hh:mm:ss",
+                        "name": "timestamp",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "404": {
                         "description": "Not Found"
