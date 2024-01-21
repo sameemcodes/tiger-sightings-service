@@ -3,6 +3,7 @@ package router
 import (
 	durable "tigerhall-kittens/cmd/durables"
 	controller "tigerhall-kittens/cmd/handlers"
+	"tigerhall-kittens/cmd/middleware"
 	"tigerhall-kittens/cmd/repository"
 	"tigerhall-kittens/cmd/service"
 
@@ -31,11 +32,14 @@ func SetupRouter(nrm gin.HandlerFunc) *gin.Engine {
 	grp1 := r.Group("/user/v1")
 	{
 		grp1.Use(nrm)
-		grp1.GET("/fetch_all", userController.GetAllUsers)
+		grp1.GET("/fetch_all", middleware.VerifyToken, userController.GetAllUsers)
 		grp1.GET("/user_id/:userId", userController.GetUserByUserId)
 		grp1.POST("/create_new", userController.CreateNewUser)
 		grp1.PUT("/update", userController.UpdateUser)
 		grp1.DELETE("/deletebyUserId/:userId", userController.DeleteUserById)
+		grp1.POST("/signup", userController.SignUp)
+		grp1.POST("/login", userController.Login)
+
 	}
 
 	// Health Route
@@ -48,7 +52,7 @@ func SetupRouter(nrm gin.HandlerFunc) *gin.Engine {
 	grp3 := r.Group("/tigerSighting/v1")
 	{
 		grp3.Use(nrm)
-		grp3.GET("/fetch_all", tigerSightingController.GetAllTigerSightings)
+		grp3.GET("/fetch_all", middleware.VerifyToken, tigerSightingController.GetAllTigerSightings)
 		grp3.GET("/sighting_id/:sightingId", tigerSightingController.GetTigerSightingById)
 		grp3.POST("/create_new", tigerSightingController.CreateNewTigerSighting)
 		grp3.PUT("/update", tigerSightingController.UpdateTigerSighting)

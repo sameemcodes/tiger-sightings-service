@@ -475,20 +475,13 @@ const docTemplate = `{
                 "summary": "Create a new user",
                 "parameters": [
                     {
-                        "description": "User",
+                        "description": "User details in JSON format",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -516,6 +509,15 @@ const docTemplate = `{
                     "User-Controller"
                 ],
                 "summary": "Delete a user by userId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -535,6 +537,58 @@ const docTemplate = `{
                     "User-Controller"
                 ],
                 "summary": "Get all users",
+                "responses": {}
+            }
+        },
+        "/user/v1/login": {
+            "post": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Controller"
+                ],
+                "summary": "Login a user",
+                "parameters": [
+                    {
+                        "description": "User credentials for login",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/v1/signup": {
+            "post": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Controller"
+                ],
+                "summary": "Sign up a user",
+                "parameters": [
+                    {
+                        "description": "User credentials for Signup",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },

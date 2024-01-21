@@ -11,6 +11,7 @@ import (
 
 type UserRepository interface {
 	GetUserByUserId(ctx context.Context, UserId string) (_ *models.User, err error)
+	GetUserByEmail(ctx context.Context, email string) (_ *models.User, err error)
 	GetAllUsers(ctx context.Context) (_ []models.User, err error)
 	CreateNewUser(ctx context.Context, user models.User) (_ models.User, err error)
 	Save(ctx context.Context, user *models.User) (_ *models.User, err error)
@@ -26,6 +27,13 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
+}
+
+func (uRepo *userRepository) GetUserByEmail(ctx context.Context, email string) (_ *models.User, err error) {
+	var user models.User
+	var dbWithCtx = uRepo.db.WithContext(ctx)
+	getUser := dbWithCtx.Where(constants.WhereEmail, email).Take(&user)
+	return &user, getUser.Error
 }
 
 func (uRepo *userRepository) GetUserByUserId(ctx context.Context, UserId string) (_ *models.User, err error) {

@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tiger (
     last_seen_coordinates_lon FLOAT NOT NULL
 );
 
+
 drop table tiger_sighting_data;
 
 
@@ -28,6 +29,8 @@ CREATE TABLE IF NOT EXISTS user (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
 );
+
+email userid unique
 
 
 

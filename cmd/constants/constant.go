@@ -33,6 +33,7 @@ var (
 const WhereUserId string = "user_id = ?"
 const WhereTigerId string = "tiger_id = ?"
 const WhereSightingId string = "sighting_id = ?"
+const WhereEmail string = "email = ?"
 
 // context key MYSQLDB
 

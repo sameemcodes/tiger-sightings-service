@@ -11,10 +11,13 @@ import (
 
 type UserController interface {
 	GetUserByUserId(ctx *gin.Context)
+	GetUserByEmail(ctx *gin.Context)
 	GetAllUsers(ctx *gin.Context)
 	CreateNewUser(ctx *gin.Context)
 	UpdateUser(ctx *gin.Context)
 	DeleteUserById(ctx *gin.Context)
+	SignUp(ctx *gin.Context)
+	Login(ctx *gin.Context)
 }
 
 type userController struct {
@@ -25,6 +28,74 @@ func NewUserController(userService service.UserService) UserController {
 	return &userController{
 		userService: userService,
 	}
+}
+
+// GetUserByEmail godoc
+// @Summary Get a user by email
+// @Tags User-Controller
+// @Accept */*
+// @Produce json
+// @Param email path string true "email"
+// @Router /user/v1/email/{email} [get]
+
+func (c *userController) GetUserByEmail(ctx *gin.Context) {
+	email := ctx.Params.ByName("email")
+	userDto, err := c.userService.GetUserByEmail(ctx, email)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during GetUserByEmail": err.Error()})
+	} else {
+		ctx.JSON(http.StatusOK, userDto)
+	}
+}
+
+// GetLogin godoc
+// @Summary Login a user
+// @Tags User-Controller
+// @Accept */*
+// @Produce json
+// @Param user body models.User true "User credentials for login"
+// @Router /user/v1/login [post]
+func (c *userController) Login(ctx *gin.Context) {
+	var user models.User
+	err := ctx.BindJSON(&user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Invalid Input ": err.Error()})
+	}
+	userDto, tokenstr, err := c.userService.Login(ctx, user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during Login ": err.Error()})
+	} else {
+		// Send the token as a cookie
+		ctx.SetSameSite(http.SameSiteLaxMode)
+		// have set to 5 seconds of cookie expiry
+		ctx.SetCookie("Authorization", tokenstr, 5, "", "", false, true)
+		ctx.JSON(http.StatusOK, gin.H{"user": userDto, "token": tokenstr})
+
+	}
+
+}
+
+// PostSignUp godoc
+// @Summary Sign up a user
+// @Tags User-Controller
+// @Accept */*
+// @Produce json
+// @Param user body models.User true "User credentials for Signup"
+// @Router /user/v1/signup [post]
+func (c *userController) SignUp(ctx *gin.Context) {
+	var user models.User
+	err := ctx.BindJSON(&user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Invalid Input ": err.Error()})
+	}
+	fmt.Println("user", user)
+	userDto, err := c.userService.SignUp(ctx, user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during CreateNewUser ": err.Error()})
+	} else {
+		ctx.JSON(http.StatusOK, userDto)
+	}
+
 }
 
 // GetUserByUserId godoc
@@ -64,8 +135,7 @@ func (c *userController) GetAllUsers(ctx *gin.Context) {
 // @Summary Create a new user
 // @Tags User-Controller
 // @Accept */*
-// @Param user body models.User true "User"
-// @Param userId path string true "userId"
+// @Param user body models.User true "User details in JSON format"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -74,6 +144,9 @@ func (c *userController) GetAllUsers(ctx *gin.Context) {
 func (c *userController) CreateNewUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Invalid Input ": err.Error()})
+	}
 	userDto, err := c.userService.CreateNewUser(ctx, user)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during CreateNewUser ": err.Error()})
@@ -107,6 +180,7 @@ func (c *userController) UpdateUser(ctx *gin.Context) {
 // @Summary Delete a user by userId
 // @Tags User-Controller
 // @Accept */*
+// @Param userId path string true "userId"
 // @Produce json
 // @Success 200
 // @Router /user/v1/deletebyUserId/{userId} [delete]
