@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS user (
-    user_id VARCHAR(255) PRIMARY KEY,
-    user_name VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL
-);
-
 
 CREATE TABLE IF NOT EXISTS tiger (
     tiger_id VARCHAR(255) PRIMARY KEY,
@@ -15,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tiger (
     last_seen_coordinates_lon FLOAT NOT NULL
 );
 
+drop table tiger_sighting_data;
 
 
 CREATE TABLE IF NOT EXISTS tiger_sighting_data (
@@ -22,8 +16,20 @@ CREATE TABLE IF NOT EXISTS tiger_sighting_data (
     tiger_id VARCHAR(255) NOT NULL,
     latitude DOUBLE NOT NULL,
     longitude DOUBLE NOT NULL,
-    timestamp VARCHAR(19) NOT NULL, -- Assuming the timestamp format is "yyyy-mm-dd HH:ii:ss",
-    sighting_image VARCHAR(255)
+    user_id VARCHAR(255) NOT NULL,
+    timestamp VARCHAR(19) NOT NULL,
+    sighting_image TEXT,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS user (
+    user_id VARCHAR(255) PRIMARY KEY,
+    user_name VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL
+);
+
+
+
 
 

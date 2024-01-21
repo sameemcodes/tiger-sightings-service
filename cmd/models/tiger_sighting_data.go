@@ -9,6 +9,7 @@ type TigerSightingData struct {
 	Latitude      float64 `json:"latitude"`
 	Longitude     float64 `json:"longitude"`
 	Timestamp     string  `json:"timestamp"`
+	UserId        string  `json:"user_id"`
 	SightingImage string  `json:"sighting_image"`
 }
 

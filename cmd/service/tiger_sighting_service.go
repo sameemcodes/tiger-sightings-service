@@ -19,6 +19,7 @@ type TigerSightingService interface {
 	UpdateTigerSighting(ctx context.Context, sightingData models.TigerSightingData) (_ *models.TigerSightingData, err error)
 	DeleteTigerSighting(ctx context.Context, sightingId string) (err error)
 	GetTigerSightingsByTigerId(ctx context.Context, tigerId string, offset int, limit int) (_ []models.TigerSightingData, err error)
+	GetUserSightingsListByTigerId(ctx context.Context, tigerId string) (_ []string, err error)
 }
 
 type tigerSightingService struct {
@@ -34,6 +35,14 @@ func NewTigerSightingService(tsRepo repository.TigerSightingRepository) TigerSig
 
 func (service *tigerSightingService) GetTigerSightingById(ctx context.Context, sightingId string) (_ *models.TigerSightingData, err error) {
 	entity, errorDb := service.tigerSightingRepository.GetTigerSightingById(ctx, sightingId)
+	if errorDb != nil {
+		return nil, errorDb
+	}
+	return entity, nil
+}
+
+func (service *tigerSightingService) GetUserSightingsListByTigerId(ctx context.Context, tigerId string) (_ []string, err error) {
+	entity, errorDb := service.tigerSightingRepository.GetUserSightingsListByTigerId(ctx, tigerId)
 	if errorDb != nil {
 		return nil, errorDb
 	}
@@ -59,11 +68,11 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 	tigerService := NewTigerService(repository.NewTigerRepository(durable.MysqlDb))
 	tiger, err := tigerService.CheckIfTigerExists(ctx, tigerId)
 	if err != nil {
-		fmt.Print("err  ", err)
+		fmt.Println("err  ", err)
 		return models.TigerSightingData{}, err
 	}
 	if !tiger {
-		fmt.Print("Unknown Tiger Sighted .Please create an Entry in Tiger Database  ", tiger)
+		fmt.Println("Unknown Tiger Sighted .Please create an Entry in Tiger Database  ", tiger)
 		return models.TigerSightingData{}, err
 	}
 
@@ -71,7 +80,7 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 	// take the last sighting of the tiger
 	tigerSighting, err := service.GetTigerSightingsByTigerId(ctx, tigerId, 0, 1)
 	if err != nil {
-		fmt.Print("Tigers not sighted before  ", err)
+		fmt.Println("Tigers not sighted before  ", err)
 		return models.TigerSightingData{}, err
 	}
 	if len(tigerSighting) > 0 {
@@ -81,25 +90,34 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 		tigerSightingLastLon := tigerSightingLast.Longitude
 
 		distanceCovered := utils.Haversine(tigerSightingLastLat, tigerSightingLastLon, sightingData.Latitude, sightingData.Longitude)
-		fmt.Print("distanceCovered  ", distanceCovered)
+		fmt.Println("distanceCovered  ", distanceCovered)
 		if distanceCovered < 5 {
-			fmt.Print("Tiger spotted within 5 kms of the last sighting  ", distanceCovered)
+			fmt.Println("Tiger spotted within 5 kms of the last sighting  ", distanceCovered)
 			return models.TigerSightingData{}, err
 		}
 	}
 
 	entity, errorDb := service.tigerSightingRepository.CreateNewTigerSighting(ctx, sightingData)
-	// update the last seen data to the tiger table
 
-	//update only the latest signthing of lat and long and timestamp of input 	UpdateTiger(ctx context.Context, tiger models.Tiger) (_ *models.Tiger, err error)
+	// send email to the users who have subscribed to the tiger sighting
 
+	userIdList, err := service.tigerSightingRepository.GetUserSightingsListByTigerId(ctx, tigerId)
+	if err != nil {
+		fmt.Println("Unable to get UserIdList to send emails  ", err)
+	} else {
+		for _, userId := range userIdList {
+			fmt.Println("userId  ", userId)
+			(*durable.MessageQueue).Enqueue(durable.MessageQueueVariable, userId)
+
+		}
+	}
 	updatedTigerModel := models.Tiger{
 		TigerID:                tigerId,
 		LastSeenCoordinatesLat: sightingData.Latitude,
 		LastSeenCoordinatesLon: sightingData.Longitude,
 		LastSeenTimestamp:      sightingData.Timestamp,
 	}
-	fmt.Print("updatedTigerModel  ", updatedTigerModel)
+	fmt.Println("updatedTigerModel  ", updatedTigerModel)
 
 	tigerService.UpdateTiger(ctx, updatedTigerModel)
 
@@ -107,22 +125,22 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 		return sightingData, errorDb
 	}
 	return entity, nil
+
 }
 
 func (service *tigerSightingService) UpdateTigerSighting(ctx context.Context, sightingData models.TigerSightingData) (_ *models.TigerSightingData, err error) {
 	var sightingId = sightingData.SightingID
 	newSighting, err := service.GetTigerSightingById(ctx, sightingId)
-	fmt.Print("newSighting  ", newSighting, "err ", err)
+	fmt.Println("newSighting  ", newSighting, "err ", err)
 	// Bind the JSON request body to the sightingData object
-	fmt.Print("sightingData ", sightingData)
+	fmt.Println("sightingData ", sightingData)
 	err2 := mapstructure.Decode(sightingData, &newSighting)
-	fmt.Print("newSighting", newSighting, "sightingData ", sightingData)
+	fmt.Println("newSighting", newSighting, "sightingData ", sightingData)
 	if err2 != nil {
-		fmt.Print("err2  ", err2)
+		fmt.Println("err2  ", err2)
 		return &sightingData, err2
 	}
 	entity, errorDb := service.tigerSightingRepository.SaveTigerSighting(ctx, newSighting)
-	fmt.Print("entity  ", entity, "errorDb ", errorDb)
 	if errorDb != nil {
 		return &sightingData, errorDb
 	}
