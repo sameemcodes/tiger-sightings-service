@@ -56,17 +56,16 @@ func (service *userService) CreateNewUser(ctx context.Context, user models.User)
 func (service *userService) UpdateUser(ctx context.Context, user models.User) (_ *models.User, err error) {
 	var userId = user.UserId
 	newUser, err := service.GetUserByUserId(ctx, userId)
-	fmt.Print("newUser  ", newUser, "err ", err)
+	fmt.Println("newUser  ", newUser, "err ", err)
 	// Bind the JSON request body to the user object
-	fmt.Print("user ", user)
+	fmt.Println("user ", user)
 	err2 := mapstructure.Decode(user, &newUser)
-	fmt.Print("newUser", newUser, "user ", user)
+	fmt.Println("newUser", newUser, "user ", user)
 	if err2 != nil {
-		fmt.Print("err2  ", err2)
+		fmt.Println("err2  ", err2)
 		return &user, err2
 	}
 	entity, errorDb := service.userRepository.Save(ctx, newUser)
-	fmt.Print("entity  ", entity, "errorDb ", errorDb)
 	if errorDb != nil {
 		return &user, errorDb
 	}

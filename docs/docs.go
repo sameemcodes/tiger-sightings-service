@@ -261,6 +261,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Timestamp Format yyyy-mm-dd hh:mm:ss",
                         "name": "timestamp",
                         "in": "formData",
@@ -425,6 +432,30 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.TigerSightingData"
                         }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/tigerSighting/v1/user_sightings/{tigerId}": {
+            "get": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TigerSighting-Controller"
+                ],
+                "summary": "Get all user sightings for a tiger",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "tigerId",
+                        "name": "tigerId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -599,6 +630,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "timestamp": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"encoding/base64"
-	"fmt"
 	"image"
 	"image/jpeg"
 
@@ -34,6 +33,5 @@ func ResizeImage(inputData []byte, width, height uint) (string, error) {
 	}
 
 	base64String := base64.StdEncoding.EncodeToString(outputBuffer.Bytes())
-	fmt.Println("base64String", base64String)
 	return base64String, nil
 }

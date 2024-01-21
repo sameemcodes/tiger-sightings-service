@@ -54,6 +54,7 @@ func SetupRouter(nrm gin.HandlerFunc) *gin.Engine {
 		grp3.PUT("/update", tigerSightingController.UpdateTigerSighting)
 		grp3.DELETE("/deletebySightingId/:sightingId", tigerSightingController.DeleteTigerSighting)
 		grp3.GET("/tiger_id/:tigerId", tigerSightingController.GetTigerSightingsByTigerId)
+		grp3.GET(("user_sightings/:tigerId"), tigerSightingController.GetUserSightingsListByTigerId)
 	}
 
 	// Tiger Routes

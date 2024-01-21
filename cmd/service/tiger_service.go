@@ -22,7 +22,6 @@ type tigerService struct {
 	tigerRepository repository.TigerRepository
 }
 
-// NewTigerService creates a new instance of TigerService
 func NewTigerService(tigerRepo repository.TigerRepository) TigerService {
 	return &tigerService{
 		tigerRepository: tigerRepo,
@@ -56,18 +55,18 @@ func (service *tigerService) CreateNewTiger(ctx context.Context, tiger models.Ti
 func (service *tigerService) UpdateTiger(ctx context.Context, tiger models.Tiger) (_ *models.Tiger, err error) {
 	var tigerId = tiger.TigerID
 	newTiger, err := service.GetTigerById(ctx, tigerId)
-	fmt.Print("newTiger  ", newTiger, "err ", err)
+	if err != nil {
+		fmt.Println("Get Tiger By Id not found  ", err)
+		return &tiger, err
+	}
 
-	// Bind the JSON request body to the tiger object
-	fmt.Print("tiger ", tiger)
 	err2 := mapstructure.Decode(tiger, &newTiger)
-	fmt.Print("newTiger", newTiger, "tiger ", tiger)
+
 	if err2 != nil {
-		fmt.Print("err2  ", err2)
+		fmt.Println("err2  ", err2)
 		return &tiger, err2
 	}
 	entity, errorDb := service.tigerRepository.SaveTiger(ctx, newTiger)
-	fmt.Print("entity  ", entity, "errorDb ", errorDb)
 	if errorDb != nil {
 		return &tiger, errorDb
 	}
@@ -75,7 +74,6 @@ func (service *tigerService) UpdateTiger(ctx context.Context, tiger models.Tiger
 }
 
 func (service *tigerService) DeleteTiger(ctx context.Context, tigerId string) (err error) {
-	// Delete Tiger by ID
 	errorDb := service.tigerRepository.DeleteTigerById(ctx, tigerId)
 	if errorDb != nil {
 		return errorDb
@@ -84,7 +82,6 @@ func (service *tigerService) DeleteTiger(ctx context.Context, tigerId string) (e
 }
 
 func (service *tigerService) CheckIfTigerExists(ctx context.Context, tigerId string) (bool, error) {
-	// check if the tigerId is present in the tiger table
 	_, errorDb := service.tigerRepository.GetTigerById(ctx, tigerId)
 	if errorDb != nil {
 		return false, errorDb
