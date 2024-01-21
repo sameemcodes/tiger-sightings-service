@@ -2,19 +2,28 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"tigerhall-kittens/cmd/models"
 	"tigerhall-kittens/cmd/repository"
+	"tigerhall-kittens/config"
+	"time"
+
+	"github.com/golang-jwt/jwt"
 
 	"github.com/mitchellh/mapstructure"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService interface {
 	GetUserByUserId(ctx context.Context, UserId string) (_ *models.User, err error)
+	GetUserByEmail(ctx context.Context, email string) (_ *models.User, err error)
 	GetAllUsers(ctx context.Context) (_ []models.User, err error)
 	CreateNewUser(ctx context.Context, user models.User) (_ models.User, err error)
 	UpdateUser(ctx context.Context, user models.User) (_ *models.User, err error)
 	DeleteUser(ctx context.Context, userId string) (err error)
+	SignUp(ctx context.Context, user models.User) (_ models.User, err error)
+	Login(ctx context.Context, user models.User) (_ models.User, tokenstr string, err error)
 }
 
 // user service implementation
@@ -29,6 +38,63 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	}
 }
 
+func (service *userService) GetUserByEmail(ctx context.Context, email string) (_ *models.User, err error) {
+	entity, errorDb := service.userRepository.GetUserByEmail(ctx, email)
+	if errorDb != nil {
+		return nil, errorDb
+	}
+	return entity, nil
+}
+
+func (service *userService) Login(ctx context.Context, user models.User) (_ models.User, tokenstr string, err error) {
+	// Look up the requested user
+	result, err := service.userRepository.GetUserByEmail(ctx, user.Email)
+	if err != nil {
+		return models.User{}, "", err
+	}
+
+	if result == nil {
+		return models.User{}, "", errors.New("the user does not exist")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password))
+	if err != nil {
+		return models.User{}, "", errors.New("the password you entered is wrong")
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.UserId,
+		"exp": time.Now().Add(time.Second * 10).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte(config.GetEnv("JWT_SECRET", "jwt_default,secret")))
+	if err != nil {
+		return models.User{}, "", errors.New("failed to generate JWT token")
+	}
+
+	return user, tokenString, nil
+}
+
+func (service *userService) SignUp(ctx context.Context, user models.User) (_ models.User, err error) {
+	// Hash the password
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return user, fmt.Errorf("failed to hash password: %v", err)
+	}
+
+	fmt.Println("hash ", hash)
+
+	// Update the user's password with the hashed value
+	user.Password = string(hash)
+
+	// Call the repository to create a new user
+	entity, errorDb := service.userRepository.CreateNewUser(ctx, user)
+	if errorDb != nil {
+		return user, errorDb
+	}
+	return entity, nil
+}
 func (service *userService) GetUserByUserId(ctx context.Context, userId string) (_ *models.User, err error) {
 	entity, errorDb := service.userRepository.GetUserByUserId(ctx, userId)
 	if errorDb != nil {

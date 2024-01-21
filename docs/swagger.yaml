@@ -350,17 +350,12 @@ paths:
       consumes:
       - '*/*'
       parameters:
-      - description: User
+      - description: User details in JSON format
         in: body
         name: user
         required: true
         schema:
           $ref: '#/definitions/models.User'
-      - description: userId
-        in: path
-        name: userId
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -377,6 +372,12 @@ paths:
     delete:
       consumes:
       - '*/*'
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -393,6 +394,40 @@ paths:
       - application/json
       responses: {}
       summary: Get all users
+      tags:
+      - User-Controller
+  /user/v1/login:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User credentials for login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login a user
+      tags:
+      - User-Controller
+  /user/v1/signup:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User credentials for Signup
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses: {}
+      summary: Sign up a user
       tags:
       - User-Controller
   /user/v1/update:
