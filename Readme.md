@@ -1,4 +1,5 @@
-The provided summary outlines key features and aspects of the MySQL database-backed Golang application. Below is a concise summary:
+### TigerHall Kittens
+
 
 ### MySQL Database Structure:
 - Database Name: `tigerkittens_db`
