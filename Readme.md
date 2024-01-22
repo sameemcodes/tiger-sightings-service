@@ -51,3 +51,6 @@
 
 Swagger :
 http://localhost:8090/swagger/index.html#/
+
+
+Use testing_instructions.md for sample input
