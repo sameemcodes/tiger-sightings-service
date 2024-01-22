@@ -7,6 +7,7 @@ The provided summary outlines key features and aspects of the MySQL database-bac
   - `tiger`: Stores tiger list data.
   - `tiger_sightings`: Stores tiger sightings data.
 
+
 ### Database Migrations:
 - Database migrations are enabled to manage schema changes over time.
 
@@ -45,7 +46,6 @@ The provided summary outlines key features and aspects of the MySQL database-bac
 - Integration with email clients (e.g., Twilio, Mailchimp).
 - Bug fixes and code cleanup.
 
-Overall, the application exhibits a comprehensive set of features with a focus on extensibility, code modularity, and practical functionalities such as authentication, image processing, and notifications. Planned improvements demonstrate a commitment to ongoing development and enhancement.
 
 
 Swagger :
