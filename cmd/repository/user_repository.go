@@ -19,10 +19,9 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	db *gorm.DB // database connection
+	db *gorm.DB
 }
 
-// NewUserRepository is creates a new instance of UserRepository
 func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,

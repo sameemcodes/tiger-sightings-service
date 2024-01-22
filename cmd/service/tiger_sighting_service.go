@@ -26,7 +26,6 @@ type tigerSightingService struct {
 	tigerSightingRepository repository.TigerSightingRepository
 }
 
-// NewTigerSightingService creates a new instance of TigerSightingService
 func NewTigerSightingService(tsRepo repository.TigerSightingRepository) TigerSightingService {
 	return &tigerSightingService{
 		tigerSightingRepository: tsRepo,
@@ -132,9 +131,10 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 func (service *tigerSightingService) UpdateTigerSighting(ctx context.Context, sightingData models.TigerSightingData) (_ *models.TigerSightingData, err error) {
 	var sightingId = sightingData.SightingID
 	newSighting, err := service.GetTigerSightingById(ctx, sightingId)
-	fmt.Println("newSighting  ", newSighting, "err ", err)
-	// Bind the JSON request body to the sightingData object
-	fmt.Println("sightingData ", sightingData)
+	if err != nil {
+		fmt.Println("err  ", err)
+		return &sightingData, err
+	}
 	err2 := mapstructure.Decode(sightingData, &newSighting)
 	fmt.Println("newSighting", newSighting, "sightingData ", sightingData)
 	if err2 != nil {
