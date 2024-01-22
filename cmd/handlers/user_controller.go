@@ -67,8 +67,8 @@ func (c *userController) Login(ctx *gin.Context) {
 	} else {
 		// Send the token as a cookie
 		ctx.SetSameSite(http.SameSiteLaxMode)
-		// have set to 5 seconds of cookie expiry
-		ctx.SetCookie("Authorization", tokenstr, 5, "", "", false, true)
+		// have set to 10 seconds of cookie expiry
+		ctx.SetCookie("Authorization", tokenstr, 10, "", "", false, true)
 		ctx.JSON(http.StatusOK, gin.H{"user": userDto, "token": tokenstr})
 
 	}

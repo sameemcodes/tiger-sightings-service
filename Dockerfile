@@ -1,25 +1,25 @@
-FROM golang:latest
+# First stage: Build the Go application
+FROM golang:latest AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum files to the workspace
-COPY go.mod go.sum ./
-
-# Download all dependencies
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
-# Install the air tool
-RUN go get -u github.com/cosmtrek/air
-
-# Copy the source code into the container
 COPY . .
 
-# Add GOPATH/bin to the PATH
-ENV PATH=$PATH:$GOPATH/bin
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# Expose the port used by your application (replace 8080 with your actual port)
+# Second stage: Run the Go application
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+
 EXPOSE 8090
 
-# Command to run the air tool
-CMD ["air"]
+CMD ["./main"]
