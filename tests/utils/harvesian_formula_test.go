@@ -7,12 +7,9 @@ import (
 )
 
 func TestHaversine(t *testing.T) {
-	// Example usage
 	lat1, lon1 := 34.0522, -118.2437 // Los Angeles
 	lat2, lon2 := 37.7749, -122.4194 // San Francisco
-
-	expectedDistance := 2 // Expected distance in kilometers
-
+	expectedDistance := 2
 	distance := utils.Haversine(lat1, lon1, lat2, lon2)
 	fmt.Println("Distance between Los Angeles and San Francisco:", distance, "km")
 	// Check if the calculated distance is close to the expected distance
