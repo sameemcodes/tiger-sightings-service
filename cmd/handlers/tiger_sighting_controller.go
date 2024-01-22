@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	durable "tigerhall-kittens/cmd/durables"
 	"tigerhall-kittens/cmd/models"
 	"tigerhall-kittens/cmd/service"
 	"tigerhall-kittens/cmd/utils"
@@ -116,16 +117,21 @@ func (c *tigerSightingController) CreateNewTigerSighting(ctx *gin.Context) {
 	sightingData.TigerID = ctx.PostForm("tiger_id")
 	sightingData.Timestamp = ctx.PostForm("timestamp")
 	sightingData.UserId = ctx.PostForm("user_id")
-
 	// Handle photo upload and resizing
 	if err := TigerSightingImageUpload(ctx, &sightingData); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		durable.HandleError(ctx, durable.ErrPhotoUpload)
 		return
 	}
 
 	sightingData, err := c.tigerSightingService.CreateNewTigerSighting(ctx, sightingData)
+	// Check if the custom error is returned
+	if customErr, ok := err.(*durable.CustomError); ok {
+		// Handle the case when the tiger is spotted within 5 kms
+		durable.HandleError(ctx, customErr)
+		return
+	}
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Error during CreateNewTigerSighting ": err.Error()})
+		durable.HandleError(ctx, durable.ErrCreateNewTigerSighting)
 	} else {
 		ctx.JSON(http.StatusOK, sightingData)
 	}

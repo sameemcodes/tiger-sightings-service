@@ -93,6 +93,7 @@ func (service *tigerSightingService) CreateNewTigerSighting(ctx context.Context,
 		fmt.Println("distanceCovered  ", distanceCovered)
 		if distanceCovered < 5 {
 			fmt.Println("Tiger spotted within 5 kms of the last sighting  ", distanceCovered)
+			err = durable.ErrTigerSighting
 			return models.TigerSightingData{}, err
 		}
 	}
