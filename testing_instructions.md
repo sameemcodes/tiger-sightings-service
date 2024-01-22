@@ -7,8 +7,6 @@
   "tiger_id": "Tiger001"
 }
 
-
-
 login
 {
   "email": "abc125@gmail.com",
@@ -38,6 +36,9 @@ curl -X 'POST' \
   -F 'tiger_id=Tiger003' \
   -F 'user_id=abc123' \
   -F 'timestamp=2023-02-01 10:00:02'
+
+
+  
 
 
   create new tigerid each time and change the latitilutes  each time keep the userid same or change it upload a random image
