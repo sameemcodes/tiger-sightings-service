@@ -23,7 +23,6 @@ func InitMysqlDb() (*gorm.DB, error) {
 	var err error
 	var sqldb *gorm.DB
 
-	// Retry connecting to the database up to 5 times
 	for i := 0; i < 5; i++ {
 		sqldb, err = gorm.Open(mysql.Open(dbSource), &gorm.Config{})
 		if err == nil {
@@ -42,12 +41,10 @@ func InitMysqlDb() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Set connection pool parameters
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetConnMaxLifetime(time.Minute * 5)
 
-	// Set up a ticker to periodically check the health of the connection
 	ticker := time.NewTicker(time.Minute * 1)
 	go func() {
 		for range ticker.C {
@@ -84,7 +81,6 @@ var modelsToMigrate = []interface{}{
 	&models.User{},
 	&models.Tiger{},
 	&models.TigerSightingData{},
-	// Add other models here as needed
 }
 
 func AutoMigrateModels(db *gorm.DB, models []interface{}) {
