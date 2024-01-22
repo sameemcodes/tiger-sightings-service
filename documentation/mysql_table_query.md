@@ -1,3 +1,4 @@
+//sample queries while testing
 
 CREATE TABLE IF NOT EXISTS tiger (
     tiger_id VARCHAR(255) PRIMARY KEY,

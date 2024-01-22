@@ -27,12 +27,10 @@ type UserService interface {
 	Login(ctx context.Context, user models.User) (_ models.User, tokenstr string, err error)
 }
 
-// user service implementation
 type userService struct {
 	userRepository repository.UserRepository
 }
 
-// NewUserService creates a new instance of UserService
 func NewUserService(userRepo repository.UserRepository) UserService {
 	return &userService{
 		userRepository: userRepo,
@@ -78,7 +76,6 @@ func (service *userService) Login(ctx context.Context, user models.User) (_ mode
 }
 
 func (service *userService) SignUp(ctx context.Context, user models.User) (_ models.User, err error) {
-	// Hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return user, fmt.Errorf("failed to hash password: %v", err)
@@ -86,10 +83,8 @@ func (service *userService) SignUp(ctx context.Context, user models.User) (_ mod
 
 	fmt.Println("hash ", hash)
 
-	// Update the user's password with the hashed value
 	user.Password = string(hash)
 
-	// Call the repository to create a new user
 	entity, errorDb := service.userRepository.CreateNewUser(ctx, user)
 	if errorDb != nil {
 		return user, errorDb
@@ -139,7 +134,6 @@ func (service *userService) UpdateUser(ctx context.Context, user models.User) (_
 	return entity, nil
 }
 func (service *userService) DeleteUser(ctx context.Context, userId string) (err error) {
-	//Delete User by Id
 	errorDb := service.userRepository.DeleteUserById(ctx, userId)
 	if errorDb != nil {
 		return errorDb
