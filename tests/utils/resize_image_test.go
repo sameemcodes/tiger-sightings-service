@@ -9,7 +9,14 @@ import (
 )
 
 func TestResizeImage(t *testing.T) {
-	imageByteArray, err := utils.JPGToByteArray("/Users/msameem/Dev/tigerhall-kittens/tests/testimages/testImage.jpeg")
+	rootDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Error getting current working directory: %v", err)
+	}
+	inputDir := rootDir + "/testimages/testImage.jpeg"
+	outputDir := rootDir + "/testimages/resizedImage.jpeg"
+	fmt.Println("inputDir", inputDir)
+	imageByteArray, err := utils.JPGToByteArray(inputDir)
 	if err != nil {
 		t.Errorf("Unable to Convert to ByteArray %v but got %v", nil, err)
 	}
@@ -32,7 +39,7 @@ func TestResizeImage(t *testing.T) {
 	}
 
 	// Write the decoded data to the output file
-	err = os.WriteFile("/Users/msameem/Dev/tigerhall-kittens/tests/testimages/decoded_image.jpg", decodedData, 0644)
+	err = os.WriteFile(outputDir, decodedData, 0644)
 	if err != nil {
 		t.Errorf("Unable to Write Decoded Image %v but got %v", nil, err)
 	}
