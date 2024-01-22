@@ -20,7 +20,7 @@
 
 ### Authentication:
 - Token-based JWT authentication is implemented.
-- Tokens are set as cookies and are valid for 10 seconds.
+- Tokens are set as cookies and are valid for CookieExpiryTime seconds.
 - Applied to create endpoints and user APIs (delete, find by user ID).
 
 ### Image Resizing:

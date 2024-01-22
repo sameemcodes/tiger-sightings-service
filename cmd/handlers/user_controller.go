@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"tigerhall-kittens/cmd/constants"
 	"tigerhall-kittens/cmd/models"
 	"tigerhall-kittens/cmd/service"
 
@@ -68,7 +69,7 @@ func (c *userController) Login(ctx *gin.Context) {
 		// Send the token as a cookie
 		ctx.SetSameSite(http.SameSiteLaxMode)
 		// have set to 10 seconds of cookie expiry
-		ctx.SetCookie("Authorization", tokenstr, 10, "", "", false, true)
+		ctx.SetCookie("Authorization", tokenstr, constants.CookieExpiryTime, "", "", false, true)
 		ctx.JSON(http.StatusOK, gin.H{"user": userDto, "token": tokenstr})
 
 	}

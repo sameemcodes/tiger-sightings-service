@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"tigerhall-kittens/cmd/constants"
 	"tigerhall-kittens/cmd/models"
 	"tigerhall-kittens/cmd/repository"
 	"tigerhall-kittens/config"
@@ -64,7 +65,7 @@ func (service *userService) Login(ctx context.Context, user models.User) (_ mode
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.UserId,
-		"exp": time.Now().Add(time.Second * 10).Unix(),
+		"exp": time.Now().Add(time.Second * constants.TokenExpiryTime).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
