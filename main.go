@@ -47,13 +47,14 @@ func main() {
 	workerPool.StartWorkers()
 
 	durable.InitMysqlDb()
+	durable.InitMysqlDbMigration() //remove this line if you don't want to migrate the db
 
 	r := router.SetupRouter(GinContextToContextMiddleware())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	go func() {
-		log.Println("Server listening on :8036")
-		err := r.Run(":8036")
+		log.Println("Server listening on :8090")
+		err := r.Run(":8090")
 		if err != nil && err != http.ErrServerClosed {
 			log.Printf("HTTP server error: %v\n", err)
 			cancel()

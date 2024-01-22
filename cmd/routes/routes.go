@@ -31,12 +31,13 @@ func SetupRouter(nrm gin.HandlerFunc) *gin.Engine {
 	// User Routes
 	grp1 := r.Group("/user/v1")
 	{
+		//have added auth to all critical users apis
 		grp1.Use(nrm)
 		grp1.GET("/fetch_all", userController.GetAllUsers)
-		grp1.GET("/user_id/:userId", userController.GetUserByUserId)
-		grp1.POST("/create_new", middleware.VerifyToken, userController.CreateNewUser)
-		grp1.PUT("/update", userController.UpdateUser)
-		grp1.DELETE("/deletebyUserId/:userId", userController.DeleteUserById)
+		grp1.GET("/user_id/:userId", middleware.VerifyToken, userController.GetUserByUserId)
+		grp1.POST("/create_new", middleware.VerifyToken, middleware.VerifyToken, userController.CreateNewUser)
+		grp1.PUT("/update", middleware.VerifyToken, userController.UpdateUser)
+		grp1.DELETE("/deletebyUserId/:userId", middleware.VerifyToken, userController.DeleteUserById)
 		grp1.POST("/signup", userController.SignUp)
 		grp1.POST("/login", userController.Login)
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	durable "tigerhall-kittens/cmd/durables"
+	"time"
 )
 
 const XPlatformVersion string = "x-platform-version"
@@ -40,3 +41,9 @@ const WhereEmail string = "email = ?"
 type MysqlDbKeyType string
 
 const MysqlDbKey MysqlDbKeyType = "mysqlDb"
+
+// cookie Expiry
+const CookieExpiryTime int = 300 // 5 minute
+
+// Token Expiry
+const TokenExpiryTime time.Duration = 300 // 5 minute

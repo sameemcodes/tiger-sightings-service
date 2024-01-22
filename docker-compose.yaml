@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: tigerkittens_db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  app:
+    build:
+      context: .
+    ports:
+      - "8090:8090"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: tigerkittens_db
+      JWT_SECRET: tigerkitten_secret
+
+volumes:
+  db_data:
